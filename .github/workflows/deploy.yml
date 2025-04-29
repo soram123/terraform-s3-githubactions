@@ -18,6 +18,7 @@ jobs:
         with:
           node-version: 20
       - run: |
+          npm install
           npm ci  #for just right packages used in package-lock.json
           npm audit || true  # don't fail on warnings
           npm run build 
