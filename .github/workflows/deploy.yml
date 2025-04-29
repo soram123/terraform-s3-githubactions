@@ -19,7 +19,7 @@ jobs:
           node-version: 20
       - run: 
           npm install
-          npm audit
+          npm ci
           npm run build 
           ls -la build/  # Verify build exists
 
