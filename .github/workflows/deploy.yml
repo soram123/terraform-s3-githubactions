@@ -20,7 +20,8 @@ jobs:
       - run: 
           npm install
           npm ci 
-          npm run build
+          npm run build || exit 1
+          ls build
 
       # Configure AWS Credentials
       - name: Configure AWS
@@ -77,11 +78,11 @@ jobs:
       #     AWS_SHARED_CREDENTIALS_FILE: "/nonexistent"  # Force ignore credentials file
       #     SOURCE_DIR: "build"
 
-      - name: Deploy to S3
+      - name: Upload to S3
         run: |
-          aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET }} \
+          echo "Syncing build/ to S3..."
+          aws s3 sync ./build s3://${{ secrets.AWS_S3_BUCKET }} \
             --acl public-read \
-            --follow-symlinks \
             --delete
 
       # Invalidate CloudFront Cache
