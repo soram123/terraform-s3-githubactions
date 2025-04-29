@@ -21,6 +21,7 @@ jobs:
           npm install
           npm ci  #for just right packages used in package-lock.json
           npm audit || true  # don't fail on warnings
+          unset CI
           npm run build 
           ls -la  build/ # Verify build exists
 
