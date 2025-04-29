@@ -41,18 +41,39 @@ jobs:
           terraform init
           terraform apply -auto-approve
         working-directory: infra
+      #checking for debugging the credentials
+      - name: Debug AWS Credentials
+        run: |
+          echo "AWS_ACCESS_KEY_ID is set: ${AWS_ACCESS_KEY_ID:+YES}"
+          echo "AWS_SECRET_ACCESS_KEY is set: ${AWS_SECRET_ACCESS_KEY:+YES}"
+          echo "AWS_S3_BUCKET is set: ${AWS_S3_BUCKET:+YES}"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          
+      #checking credentials file
+      - name: Check for ~/.aws/credentials file
+        run: |
+          echo "Checking if AWS credentials file exists..."
+          if [ -f ~/.aws/credentials ]; then
+            echo "Found ~/.aws/credentials file:"
+            cat ~/.aws/credentials
+          else
+            echo "No ~/.aws/credentials file found."
+          fi
 
       # Upload to S3 using jakejarvis/s3-sync-action (Option 1)
       - name: Deploy to S3
-        uses: jakejarvis/s3-sync-action@v0.5.0
+        uses: jakejarvis/s3-sync-action@v0.6.0
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
-          AWS_S3_BUCKET: soram-terraform-cloudfront
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "ap-south-1"
-          SOURCE_DIR: './build'
+          SOURCE_DIR: "build"
 
       # Invalidate CloudFront Cache
       - name: Invalidate CDN Cache
