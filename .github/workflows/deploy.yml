@@ -20,8 +20,9 @@ jobs:
       - run: 
           npm install
           npm ci 
-          npm run build || exit 1
-          ls build
+          npm audit
+          npm run build 
+          ls -la build/  # Verify build exists
 
       # Configure AWS Credentials
       - name: Configure AWS
@@ -77,11 +78,19 @@ jobs:
       #     AWS_SDK_LOAD_CONFIG: "0"  # Must be string "0" not number 0
       #     AWS_SHARED_CREDENTIALS_FILE: "/nonexistent"  # Force ignore credentials file
       #     SOURCE_DIR: "build"
-
+      - name: Debug Workspace
+        run: |
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          echo "Current dir: $(pwd)"
+          ls -la
+          ls -la build/ || echo "No build directory"
+          
       - name: Upload to S3
         run: |
-          echo "Syncing build/ to S3..."
-          aws s3 sync ./build s3://${{ secrets.AWS_S3_BUCKET }} \
+          echo "Contents of build/:"
+          ls -la ${{ github.workspace }}/build/
+          
+          aws s3 sync ${{ github.workspace }}/build s3://${{ secrets.AWS_S3_BUCKET }} \
             --acl public-read \
             --delete
 
