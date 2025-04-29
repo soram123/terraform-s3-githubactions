@@ -64,18 +64,25 @@ jobs:
           fi
 
       # Upload to S3 using jakejarvis/s3-sync-action (Option 1)
+      # - name: Deploy to S3
+      #   uses: jakejarvis/s3-sync-action@v0.5.0
+      #   with:
+      #     args: --acl public-read --follow-symlinks --delete
+      #   env:
+      #     AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     AWS_REGION: "ap-south-1"
+      #     AWS_SDK_LOAD_CONFIG: "0"  # Must be string "0" not number 0
+      #     AWS_SHARED_CREDENTIALS_FILE: "/nonexistent"  # Force ignore credentials file
+      #     SOURCE_DIR: "build"
+
       - name: Deploy to S3
-        uses: jakejarvis/s3-sync-action@v0.5.0
-        with:
-          args: --acl public-read --follow-symlinks --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "ap-south-1"
-          AWS_SDK_LOAD_CONFIG: "0"  # Must be string "0" not number 0
-          AWS_SHARED_CREDENTIALS_FILE: "/nonexistent"  # Force ignore credentials file
-          SOURCE_DIR: "build"
+        run: |
+          aws s3 sync build s3://${{ secrets.AWS_S3_BUCKET }} \
+            --acl public-read \
+            --follow-symlinks \
+            --delete
 
       # Invalidate CloudFront Cache
       - name: Invalidate CDN Cache
