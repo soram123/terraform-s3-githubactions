@@ -20,7 +20,7 @@ jobs:
       - run: 
           npm install
           npm run build 
-          # ls -la build/  # Verify build exists
+          ls -la   # Verify build exists
 
       # Configure AWS Credentials
       - name: Configure AWS
