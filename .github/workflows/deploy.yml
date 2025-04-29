@@ -19,9 +19,8 @@ jobs:
           node-version: 20
       - run: 
           npm install
-          npm ci
           npm run build 
-          ls -la build/  # Verify build exists
+          # ls -la build/  # Verify build exists
 
       # Configure AWS Credentials
       - name: Configure AWS
