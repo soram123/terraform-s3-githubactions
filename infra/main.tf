@@ -98,6 +98,9 @@ resource "aws_s3_bucket_policy" "cloudfront_access" {
   })
 }
 
+output "cloudfront_distribution_id" {
+  value = aws_cloudfront_distribution.cdn.id
+}
 output "cloudfront_url" {
   value = "https://${aws_cloudfront_distribution.cdn.domain_name}"
 }

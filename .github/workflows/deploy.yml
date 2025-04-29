@@ -39,11 +39,18 @@ jobs:
         with:
           terraform-version: 1.6.0
 
-      - name: Terraform Init & Apply
+      - name: Terraform Init
+        run: terraform -chdir=infra init
+
+      - name: Terraform Apply
+        run: terraform -chdir=infra apply -auto-approve
+
+      # Capture CloudFront distribution ID
+      - name: Get CloudFront Distribution ID
+        id: cf
         run: |
-          terraform init
-          terraform apply -auto-approve
-        working-directory: infra
+          echo "DIST_ID=$(terraform -chdir=infra output -raw cloudfront_distribution_id)" >> $GITHUB_ENV
+
       #checking for debugging the credentials
       - name: Debug AWS Credentials
         run: |
